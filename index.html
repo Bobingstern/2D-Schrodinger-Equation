@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>2d particle in a box</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+
+  <!-- The loading of KaTeX is deferred to speed up page rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/katex.min.js" integrity="sha384-483A6DwYfKeDa0Q52fJmxFXkcPCFfnXMoXblOkJ4JcA8zATN6Tm78UNL72AKk+0O" crossorigin="anonymous"></script>
+
+  <!-- To automatically render math in text elements, include the auto-render extension: -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/contrib/auto-render.min.js" integrity="sha384-yACMu8JWxKzSp/C1YV86pzGiQ/l1YUfE8oPuahJQxzehAjEt2GiQuy/BIvl9KyeF" crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"></script>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  
+  <h1 style="text-align:center;">Particle in a 2d box</h1>
+  <p style="text-align:center;"> The 1d particle in a box is a classic example of the schrodinger equation
+      <br>
+      but something overlooked it the particle in a 2d box which is what
+      <br>  
+      we will be examining here, and visualising it!</p>
+  <h2 style="text-align:center;">The Schrodinger equation</h2>
+  <p style="text-align:center;">
+    Firstly, lets define what the schrodinger equation looks like for 2d.
+    <br>
+    It's fairly simple. The 1d time independent equation is as follows:
+  </p>
+  <h3 id=1dSchro style="text-align:center;"></h3>
+  <script>
+    katex.render("i\\hbar \\frac{\\partial \\psi(x)}{\\partial x} = -\\frac{\\hbar^2}{2m} \\frac{\\partial^2 \\psi(x)}{\\partial x^2} + \\psi(x)V(x)", document.getElementById("1dSchro"))
+  </script>
+  <p style="text-align:center;">The simplified version using the Hamiltonian operator</p>
+  <h3 id=Ham1d style="text-align:center;"></h3>
+  <script>
+    katex.render("E\\psi(x) = \\hat{H}\\psi(x)", document.getElementById("Ham1d"))
+  </script>
+
+  <p style="text-align:center;"> Extending this out into 2d is fairly simple. 
+    <br>
+    The hamiltonian just becomes:</p>
+  <h3 style="text-align:center;" id=2dHam></h3>
+  <script>
+    katex.render("\\hat{H} = \\big[-\\frac{\\hbar^2}{2m}\\big(\\frac{\\partial^2}{\\partial x^2} + \\frac{\\partial^2}{\\partial y^2}\\big) + V(x)\\big]", document.getElementById("2dHam"))
+  </script>
+
+  <p style="text-align:center;">
+    Remember that the potential for the particle in a box is
+  </p>
+  <h3 style="text-align:center;" id=Pot></h3>
+  <script>
+    katex.render("V(x) = \\begin{cases} 0 & 0\\le x\\le L \\ \\text{and} \\ 0\\le y\\le L \\\\ \\infty & \\text{otherwise} \\ \\end{cases}", document.getElementById("Pot"))
+  </script>
+  <p style="text-align:center;">
+    Basically, this means that the potential energy is 0 when the particle
+    <br>
+    is inside the box and infinity everywhere else, meaning that 
+    <br>
+    the particle has 0 probability of being outside the box and the wavefunction is 0 at the edges
+    <br>
+    We must now seperate the variables into 2 function for x and y. This is actually very straightforward 
+    <br>
+    and is as follows:
+  </p>
+
+  <h3 style="text-align:center;" id=Sep></h3>
+  <script>
+    katex.render("-\\frac{\\hbar^2}{2m}\\big(\\frac{d^2 X(x)}{dx^2}\\big) = \\epsilon_x X(x)   \\\\ \\text{and} \\\\   -\\frac{\\hbar^2}{2m}\\big(\\frac{d^2 Y(y)}{dy^2}\\big) = \\epsilon_y Y(y) \\\\ \\text{where} \\\\ E=\\epsilon_x + \\epsilon_y", document.getElementById("Sep"))
+  </script>
+  <p style="text-align:center;"> 
+  This should look very familiar as it is the same equation as the particle in a 1d box
+    <br>
+    They can be written like this:
+  </p>
+  <h3 style="text-align:center;" id=SolNPi></h3>
+  <script>
+    katex.render("A\\sin\\bigg(\\sqrt{ \\frac{2m\\epsilon_x}{\\hbar^2} }x\\bigg) \\sin\\bigg(\\sqrt{ \\frac{2m\\epsilon_y}{\\hbar^2} }y\\bigg)", document.getElementById("SolNPi"))
+  </script>
+  <p style="text-align:center;"> Since the wave function must equal 0 at the edges the following equations have to be true</p>
+  <h3 style="text-align:center;" id=SolNPiSol></h3>
+  <script>
+    katex.render("A\\sin\\bigg(\\sqrt{ \\frac{2m\\epsilon_x}{\\hbar^2} }L\\bigg) \\sin\\bigg(\\sqrt{ \\frac{2m\\epsilon_y}{\\hbar^2} }y\\bigg) = 0 \\\\ A\\sin\\bigg(\\sqrt{ \\frac{2m\\epsilon_x}{\\hbar^2} }x\\bigg) \\sin\\bigg(\\sqrt{ \\frac{2m\\epsilon_y}{\\hbar^2} }L\\bigg) = 0 ", document.getElementById("SolNPiSol"))
+  </script>
+
+  <p style="text-align:center;"> These can only be true if  </p> 
+  <h3 style="text-align:center;" id=sqSol></h3>
+  <script>
+    katex.render("\\sqrt{ \\frac{2m\\epsilon_x}{\\hbar^2} }L = n_x\\pi \\\\ \\sqrt{ \\frac{2m\\epsilon_y}{\\hbar^2} }L = n_y\\pi", document.getElementById("sqSol"))
+  </script>
+
+  <p style="text-align:center;"> Now solving for the allowed energies yields </p>
+  <h3 style="text-align:center;" id=Ens></h3>
+  <script>
+    katex.render("\\epsilon_{n_x} = \\frac{\\hbar^2 \\pi^2}{2mL^2}n_x^2 \\\\ \\text{ } \\\\ \\epsilon_{n_y} = \\frac{\\hbar^2 \\pi^2}{2mL^2}n_y^2 \\\\ \\text{ } \\\\ \\text{and finally} \\\\ \\text{ } \\\\ E_{n_xn_y} = \\frac{\\hbar^2 \\pi^2}{2mL^2}(n_x^2+n_y^2)", document.getElementById("Ens"))
+  </script>
+  <p style="text-align:center;"> We are almost done with the time independent part. The last step it to normalise the 
+  <br>
+    function and solve for A. This can be expressed with a double integral
+  </p>
+  <h3 style="text-align:center;" id=Dou></h3>
+  <script>
+    katex.render("\\displaystyle\\int_0^L \\int_0^L A\\sin\\bigg(\\frac{n_x\\\pi x}{L}\\bigg)\\sin\\bigg(\\frac{n_y\\\pi y}{L}\\bigg)dxdy = 1 \\\\ A = \\frac{2}{L}",document.getElementById("Dou"))
+  </script>
+  <p style="text-align:center;">
+    This integral is fairly simple to solve so I won't go over it.
+    <br>
+    Now that we have solved the time independent Schrodinger equation, we can easily time evolve it.
+    <br>
+    Recall that to time evolve a 1d wavefunction you need to solve for the coefficients and perform a sum
+    <br>
+    It looks like this:
+  </p>
+  <h3 style="text-align:center;" id=1dSums></h3>
+  <script>
+    katex.render("c_n = \\displaystyle\\int_0^L\\psi_n(x)^*\\Psi(x,0)dx \\\\ \\text{ } \\\\ \\Psi(x,t) = \\sum_{n=1}^\\infty c_n \\psi_n(x) e^{-iE_n\\hbar t}",document.getElementById("1dSums"))
+  </script>
+  <p style="text-align:center;">
+    It's super easy to extend this into 2d. Turn the sums into double sums and double integrals
+  </p>
+  <h3 style="text-align:center;" id=2dSums></h3>
+  <script>
+    katex.render("c_{n_xn_y} = \\displaystyle\\int_0^L\\int_0^L \\psi_{n_xn_y}(x,y)^*\\Psi(x,y,0)dxdy \\\\ \\text{ } \\\\ \\Psi(x,y,t) = \\sum_{n_x=1}^\\infty \\sum_{n_y=1}^\\infty c_{n_xn_y}\\psi_{n_xn_y}(x,y)e^{-iE\\hbar t}", document.getElementById("2dSums"))
+  </script>
+  <p style="text-align:center;">
+    We are now fully prepared to time evolve our function! All we need now is to choose an inital state
+    <br>
+    for the particle. The gaussian bump is commonly used, so lets put it all together now!
+  </p>
+  <h3 style="text-align:center;" id=Full></h3>
+  <script>
+    let s = `
+    \\psi_{n_xn_y}(x,y) = \\frac{2}{L}\\sin\\big(\\frac{n_x\\pi x}{L} \\big) \\sin\\big(\\frac{n_y\\pi y}{L} \\big)
+    \\\\ \\text{ } \\\\
+    \\Psi(x,y,0) =  \\exp( \\frac{-(x-x_0)^2}{2\\sigma^2} )\\exp( \\frac{-(y-y_0)^2}{2\\sigma^2} )
+    \\\\
+    `
+    katex.render(s,document.getElementById("Full"))
+  </script>
+  <p style="text-align:center;">
+    For the sums, I computed them up to 5 for each instead of infinity for obvious reasons
+    <br>
+    Here is a small animation I made of it
+  </p>
+  <div id="mygraph"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.5.0/math.min.js" integrity="sha512-00H1MVRoa94KN7GTlXFlEtJoOimZCCxmaFN4sT8EiZVM90XO+C51tgQxK5k6mxBZRIoaZjPYrG2i4+v+7hqMUw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="vis.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>
